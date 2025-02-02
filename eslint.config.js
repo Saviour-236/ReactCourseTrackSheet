@@ -18,23 +18,11 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
     },
     rules: {
-<<<<<<< HEAD
-      ...js.configs.recommended.rules,
-      ...react.configs.recommended.rules,
-      ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
-      'react/jsx-no-target-blank': 'off',
-=======
-      ...reactHooks.configs.recommended.rules,
->>>>>>> e6cf68a (intilizing the main brach)
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
     },
   },
-<<<<<<< HEAD
-]
-=======
 )
->>>>>>> e6cf68a (intilizing the main brach)
