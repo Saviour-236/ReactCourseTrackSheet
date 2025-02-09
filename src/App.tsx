@@ -1,30 +1,49 @@
 import PlayerTemplate from './ReusableComponents/PlayerTemplate'
 import './App.css'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GameBoard from "./ReusableComponents/GameBoard";
-
+import { ToastContainer, toast } from 'react-toastify';
 function App() {
   const [boxes,setBoxex] = useState([
     [null, null, null],
     [null, null, null],
     [null, null, null]
   ])
+  const winningCombinations = [
+    [[0, 0], [0, 1], [0, 2]], // Top row
+    [[1, 0], [1, 1], [1, 2]], // Middle row
+    [[2, 0], [2, 1], [2, 2]], // Bottom row
+    [[0, 0], [1, 0], [2, 0]], // Left column
+    [[0, 1], [1, 1], [2, 1]], // Middle column
+    [[0, 2], [1, 2], [2, 2]], // Right column
+    [[0, 0], [1, 1], [2, 2]], // Diagonal (top-left to bottom-right)
+    [[0, 2], [1, 1], [2, 0]], // Diagonal (top-right to bottom-left)
+  ];
+  const [activePlayerSign,setActivePlayerSign] = useState("X")
   const shiftPlayerTurn = (sign:string,row:any,col:any) => {
-    setBoxex((prevBox:any)=>{
-      let newbox = [...prevBox]
-      console.log(newbox)
-      newbox[row][col] = sign;
-      return newbox
-    })
-   if(sign=="X"){
-      setActivePlayerSign('0')
+    if(boxes[row][col] !== null){
+      toast("Already filled")
       return
-   }
-    setActivePlayerSign('X')
+    }
+    setBoxex((prevBox:any)=>{
+      let newbox = prevBox.map((preRow:any)=> [...preRow]); // Deep copy
+      newbox[row][col] = sign;
+      return newbox;
+   })
+    setActivePlayerSign(sign === "X" ? "O" : "X");
   }
-  const [activePlayerSign,setActivePlayerSign] = useState('X')
+  useEffect(()=>{
+    winningCombinations.forEach((combination)=>{
+      let [a,b,c] = combination;
+      if(boxes[a[0]][a[1]]  === boxes[b[0]][b[1]] && boxes[b[0]][b[1]]  ===  boxes[c[0]][c[1]]  &&  boxes[c[0]][c[1]] !== null){
+        toast(boxes[c[0]][c[1]]+ " is winner")
+        return;
+       } 
+      })
+  },[boxes])
   return (
     <>
+    <ToastContainer/>
       <main className=" min-w-fit relative bg-center bg-contain rounded-2xl w-[80vw] m-auto mt-[3rem] bg-[#eeeeee30] p-[3rem] " >
           <div className="flex justify-around ">
               <PlayerTemplate playerName="suresh" playerSign="0" />
@@ -33,6 +52,15 @@ function App() {
           <article className="flex justify-center ">
                 <GameBoard boxes={boxes} shiftPlayerTurn={shiftPlayerTurn} activePlayerSign = {activePlayerSign} />
           </article> 
+      <button className="bg-[#b8bdc7] float-right hover:cursor-pointer text-[#1e2446e3] rounded-2xl p-[0.5rem]"
+      onClick={()=>setBoxex([
+        [null, null, null],
+        [null, null, null],
+        [null, null, null]
+      ])}
+      >
+        Reset
+      </button>
       </main>
     </>
   );
