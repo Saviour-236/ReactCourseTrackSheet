@@ -19,6 +19,8 @@ function App() {
     [[0, 0], [1, 1], [2, 2]], // Diagonal (top-left to bottom-right)
     [[0, 2], [1, 1], [2, 0]], // Diagonal (top-right to bottom-left)
   ];
+  const [colNo,setColNo] = useState(0)
+  const [winner,setWinner] = useState<string|null>(null)
   const [activePlayerSign,setActivePlayerSign] = useState("X")
   const shiftPlayerTurn = (sign:string,row:any,col:any) => {
     if(boxes[row][col] !== null){
@@ -32,14 +34,29 @@ function App() {
    })
     setActivePlayerSign(sign === "X" ? "O" : "X");
   }
+  const handleReset = () => {
+    setBoxex([
+      [null, null, null],
+      [null, null, null],
+      [null, null, null]
+    ])
+    setWinner(null);
+    setColNo(0)
+    setActivePlayerSign("X")
+  }
   useEffect(()=>{
+    if(colNo === 9 && winner === null){
+      setWinner("Draw")
+      return
+    }
     winningCombinations.forEach((combination)=>{
       let [a,b,c] = combination;
       if(boxes[a[0]][a[1]]  === boxes[b[0]][b[1]] && boxes[b[0]][b[1]]  ===  boxes[c[0]][c[1]]  &&  boxes[c[0]][c[1]] !== null){
-        toast(boxes[c[0]][c[1]]+ " is winner")
-        return;
+      setWinner(boxes[c[0]][c[1]]);
+      return;
        } 
       })
+      setColNo((colNo)=>colNo+1)
   },[boxes])
   return (
     <>
@@ -50,14 +67,10 @@ function App() {
               <PlayerTemplate playerName="suresh" playerSign="X" />
           </div>
           <article className="flex justify-center ">
-                <GameBoard boxes={boxes} shiftPlayerTurn={shiftPlayerTurn} activePlayerSign = {activePlayerSign} />
+                <GameBoard boxes={boxes} shiftPlayerTurn={shiftPlayerTurn} activePlayerSign = {activePlayerSign} winner={winner} />
           </article> 
       <button className="bg-[#b8bdc7] float-right hover:cursor-pointer text-[#1e2446e3] rounded-2xl p-[0.5rem]"
-      onClick={()=>setBoxex([
-        [null, null, null],
-        [null, null, null],
-        [null, null, null]
-      ])}
+      onClick={handleReset}
       >
         Reset
       </button>
